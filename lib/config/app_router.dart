@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-// Prefer explicit prefixes for files that might export overlapping symbols:
+// Screens
 import '../views/common/splash_screen.dart';
 import '../views/common/language_selection_screen.dart' as lang;
 import '../views/common/onboarding_screen.dart' as onboarding;
@@ -10,11 +10,12 @@ import '../views/common/welcome_screen.dart';
 
 import '../views/auth/phone_number_screen.dart';
 import '../views/auth/otp_verification_screen.dart';
+import '../views/auth/email_login_screen.dart';
 import '../views/auth/profile_setup_screen.dart';
 
 import '../views/home/home_screen.dart';
 
-// Root navigator key to safely handle navigation from async callbacks or splash
+// Root navigator key
 final GlobalKey<NavigatorState> rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
 
@@ -22,7 +23,6 @@ final GoRouter appRouter = GoRouter(
   navigatorKey: rootNavigatorKey,
   initialLocation: '/',
 
-  // Always use the initialLocation instead of the browser's current URL.
   overridePlatformDefaultLocation: true,
 
   routes: [
@@ -31,13 +31,11 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const SplashScreen(),
     ),
 
-    // Note: use the prefix 'lang.' because we imported language_selection_screen.dart as lang
     GoRoute(
       path: '/language',
       builder: (context, state) => const lang.LanguageSelectionScreen(),
     ),
 
-    // use prefix 'onboarding.' for onboarding screen
     GoRoute(
       path: '/onboarding',
       builder: (context, state) => const onboarding.OnboardingScreen(),
@@ -54,9 +52,15 @@ final GoRouter appRouter = GoRouter(
     ),
 
     GoRoute(
+      path: '/email-login',
+      builder: (context, state) => const EmailLoginScreen(),
+    ),
+
+    GoRoute(
       path: '/otp-verification',
       builder: (context, state) {
-        final phoneNumber = state.extra as String;
+        final extra = state.extra;
+        final String phoneNumber = extra is String ? extra : '+94 77 123 4567';
         return OTPVerificationScreen(phoneNumber: phoneNumber);
       },
     ),

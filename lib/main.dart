@@ -1,4 +1,5 @@
-// Main entry point for the ECOLANKA application.
+// Main entry point for the ReShare application.
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
@@ -6,6 +7,8 @@ import 'package:provider/provider.dart';
 import 'config/app_router.dart';
 import 'config/theme.dart';
 import 'controllers/item_controller.dart';
+import 'firebase_options.dart';
+import 'providers/auth_provider.dart';
 import 'providers/user_provider.dart';
 import 'providers/language_provider.dart';
 
@@ -13,6 +16,15 @@ import 'l10n/app_localizations.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    debugPrint('Firebase Connected: \${Firebase.app().options.projectId}');
+  } catch (error) {
+    debugPrint('Firebase initialization note: \$error');
+  }
 
   // Create language provider
   final languageProvider = LanguageProvider();
@@ -23,6 +35,11 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: [
+        // Authentication Provider
+        ChangeNotifierProvider(
+          create: (_) => AuthProvider(),
+        ),
+
         // User state
         ChangeNotifierProvider(
           create: (_) => UserProvider(),
@@ -43,7 +60,7 @@ Future<void> main() async {
   );
 }
 
-/// Root widget of the ECOLANKA application.
+/// Root widget of the application.
 class EcoLankaApp extends StatelessWidget {
   const EcoLankaApp({super.key});
 
@@ -52,7 +69,7 @@ class EcoLankaApp extends StatelessWidget {
     return Consumer<LanguageProvider>(
       builder: (context, languageProvider, child) {
         return MaterialApp.router(
-          title: 'EcoLanka',
+          title: 'ReShare',
           debugShowCheckedModeBanner: false,
 
           // Global theme

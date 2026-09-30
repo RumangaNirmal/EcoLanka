@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1001526514043",
+    "project_id": "reshare-a047d",
+    "storage_bucket": "reshare-a047d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1001526514043:android:106d2345dfaf46e80fadde",
+        "android_client_info": {
+          "package_name": "com.ecolanka.ecolanka"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1001526514043-vd59udadu3s1kkol4r6bapm849ub2ctn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVzraeuB34WfBkmk1pPAqcltZcSH2qMsE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1001526514043-vd59udadu3s1kkol4r6bapm849ub2ctn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
