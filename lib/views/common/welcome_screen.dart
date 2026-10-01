@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+
 import '../../config/constants.dart';
 import '../../providers/auth_provider.dart';
 
@@ -34,9 +36,9 @@ class WelcomeScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-        content: Text(body, style: const TextStyle(fontSize: 14, height: 1.5, color: Colors.black87)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+        content: Text(body, style: const TextStyle(fontSize: 13, height: 1.5, color: AppColors.textSecondary)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
@@ -49,314 +51,266 @@ class WelcomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AuthProvider>(
-      builder: (context, authProvider, _) {
-        final isLoading = authProvider.isLoading;
-
-        return Scaffold(
-          backgroundColor: Colors.white,
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            actions: [
-              // Dev Mock Mode Toggle Badge
-              Padding(
-                padding: const EdgeInsets.only(right: 16),
-                child: FilterChip(
-                  label: Text(
-                    authProvider.useMockMode ? 'Mock: ON' : 'Firebase: ON',
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      color: authProvider.useMockMode ? const Color(0xFF1B5E20) : const Color(0xFF0D47A1),
-                    ),
-                  ),
-                  selected: authProvider.useMockMode,
-                  selectedColor: const Color(0xFFE8F5E9),
-                  backgroundColor: const Color(0xFFE3F2FD),
-                  side: BorderSide(
-                    color: authProvider.useMockMode ? const Color(0xFFA5D6A7) : const Color(0xFF90CAF9),
-                  ),
-                  onSelected: (val) {
-                    authProvider.toggleMockMode(val);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        duration: const Duration(seconds: 2),
-                        content: Text(
-                          val
-                              ? 'Mock Mode Enabled (Instant phone & OTP: 123456)'
-                              : 'Real Firebase Auth Mode Enabled',
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-          body: SafeArea(
-            child: Column(
-              children: [
-                // Top / Center Section
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 28),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // ReShare Logo with soft glow effect
-                        Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            color: AppColors.brandPrimary,
-                            borderRadius: BorderRadius.circular(22),
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppColors.brandPrimary.withValues(alpha: 0.35),
-                                blurRadius: 26,
-                                spreadRadius: 6,
-                                offset: const Offset(0, 6),
-                              ),
-                            ],
-                          ),
-                          padding: const EdgeInsets.all(16),
-                          child: Image.asset(
-                            AppImages.logo,
-                            fit: BoxFit.contain,
-                            errorBuilder: (context, error, stackTrace) {
-                              return const Icon(
-                                Icons.eco_rounded,
-                                size: 44,
-                                color: Colors.white,
-                              );
-                            },
-                          ),
-                        ),
-                        const SizedBox(height: 32),
-
-                        // Heading
-                        const Text(
-                          'Welcome to ReShare',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.w800,
-                            color: Color(0xFF1F2937),
-                            letterSpacing: -0.5,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-
-                        // Tagline
-                        Text(
-                          'Share more, waste less — empower communities together in Sri Lanka.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 15,
-                            height: 1.45,
-                            color: Colors.grey.shade600,
-                            fontWeight: FontWeight.w400,
-                          ),
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Top Brand Header
+              Column(
+                children: [
+                  const SizedBox(height: 20),
+                  Container(
+                    width: 84,
+                    height: 84,
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(color: AppColors.brand100, width: 1.5),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.brandPrimary.withValues(alpha: 0.12),
+                          blurRadius: 18,
+                          offset: const Offset(0, 6),
                         ),
                       ],
                     ),
-                  ),
-                ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.asset(
+                        AppImages.logo,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(Icons.all_inclusive, color: AppColors.brandPrimary, size: 40),
+                      ),
+                    ),
+                  ).animate().fadeIn(duration: 600.ms).scale(),
 
-                // Bottom Action Buttons & Terms
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
+                  const SizedBox(height: 20),
+
+                  const Text(
+                    'Welcome to ShareLoop',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.textPrimary,
+                      letterSpacing: -0.5,
+                    ),
+                  ).animate().fadeIn(delay: 150.ms),
+
+                  const SizedBox(height: 6),
+
+                  const Text(
+                    'Choose a login method to continue',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ).animate().fadeIn(delay: 250.ms),
+                ],
+              ),
+
+              // Center Action Buttons
+              Column(
+                children: [
+                  // Mobile Login Button
+                  ElevatedButton(
+                    onPressed: () => _onContinueWithPhone(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.brandPrimary,
+                      foregroundColor: Colors.white,
+                      elevation: 3,
+                      shadowColor: AppColors.brandPrimary.withValues(alpha: 0.3),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.smartphone_rounded, size: 20),
+                        SizedBox(width: 10),
+                        Text(
+                          'Login with Mobile Number',
+                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                        ),
+                      ],
+                    ),
+                  ).animate().fadeIn(delay: 350.ms).slideY(begin: 0.1, end: 0),
+
+                  const SizedBox(height: 18),
+
+                  // OR Divider
+                  Row(
                     children: [
-                      // Primary Button: Login with Mobile Number
-                      SizedBox(
-                        width: double.infinity,
-                        height: 52,
-                        child: ElevatedButton(
-                          onPressed: isLoading ? null : () => _onContinueWithPhone(context),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.brandPrimary,
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(26),
-                            ),
-                          ),
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.phone_iphone_rounded, color: Colors.white, size: 20),
-                              SizedBox(width: 10),
-                              Text(
-                                'Login with Mobile Number',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
+                      const Expanded(child: Divider(color: AppColors.borderPrimary)),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Text(
+                          'OR',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 1.2,
+                            color: AppColors.textTertiary,
                           ),
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      const Expanded(child: Divider(color: AppColors.borderPrimary)),
+                    ],
+                  ),
 
-                      // Secondary Button 1: Continue with Google
-                      SizedBox(
-                        width: double.infinity,
-                        height: 52,
-                        child: OutlinedButton(
-                          onPressed: isLoading ? null : () => _onContinueWithGoogle(context),
-                          style: OutlinedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            side: BorderSide(color: Colors.grey.shade300),
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(26),
-                            ),
+                  const SizedBox(height: 18),
+
+                  // Google Button
+                  InkWell(
+                    onTap: () => _onContinueWithGoogle(context),
+                    borderRadius: BorderRadius.circular(18),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(color: AppColors.borderSecondary),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.03),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
                           ),
-                          child: isLoading
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(strokeWidth: 2),
-                                )
-                              : Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      width: 22,
-                                      height: 22,
-                                      decoration: const BoxDecoration(
-                                        shape: BoxShape.circle,
-                                      ),
-                                      alignment: Alignment.center,
-                                      child: const Text(
-                                        'G',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                          color: Color(0xFF4285F4),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 10),
-                                    const Text(
-                                      'Continue with Google',
-                                      style: TextStyle(
-                                        color: Color(0xFF1F2937),
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                        ),
+                        ],
                       ),
-                      const SizedBox(height: 12),
-
-                      // Secondary Button 2: Continue with Email
-                      SizedBox(
-                        width: double.infinity,
-                        height: 52,
-                        child: OutlinedButton(
-                          onPressed: isLoading ? null : () => _onContinueWithEmail(context),
-                          style: OutlinedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            side: BorderSide(color: Colors.grey.shade300),
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(26),
-                            ),
-                          ),
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.mail_outline_rounded, color: Color(0xFF1F2937), size: 20),
-                              SizedBox(width: 10),
-                              Text(
-                                'Continue with Email',
-                                style: TextStyle(
-                                  color: Color(0xFF1F2937),
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-
-                      // Footer: Terms of Service and Privacy Policy
-                      Wrap(
-                        alignment: WrapAlignment.center,
-                        crossAxisAlignment: WrapCrossAlignment.center,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
-                            'By continuing, you agree to our ',
+                          // Google G Icon
+                          Image.network(
+                            'https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg',
+                            width: 18,
+                            height: 18,
+                            errorBuilder: (context, error, stackTrace) => const Icon(
+                              Icons.g_mobiledata_rounded,
+                              size: 24,
+                              color: Color(0xFF4285F4),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          const Text(
+                            'Continue with Google',
                             style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey.shade500,
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () => _showInfoDialog(
-                              context,
-                              'Terms of Service',
-                              'Welcome to ReShare. By using this service, you agree to treat community members with dignity, list items accurately, and uphold safe item exchange practices across Sri Lanka.',
-                            ),
-                            child: Text(
-                              'Terms of Service',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey.shade800,
-                                decoration: TextDecoration.underline,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                          Text(
-                            ' and ',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey.shade500,
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () => _showInfoDialog(
-                              context,
-                              'Privacy Policy',
-                              'Your privacy is essential. ReShare protects your mobile number, email, and location data in compliance with Sri Lankan data protection guidelines and Cloud Firestore security standards.',
-                            ),
-                            child: Text(
-                              'Privacy Policy',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey.shade800,
-                                decoration: TextDecoration.underline,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                          Text(
-                            '.',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey.shade500,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.textPrimary,
                             ),
                           ),
                         ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ).animate().fadeIn(delay: 450.ms).slideY(begin: 0.1, end: 0),
+
+                  const SizedBox(height: 12),
+
+                  // Gmail / Email Button
+                  InkWell(
+                    onTap: () => _onContinueWithEmail(context),
+                    borderRadius: BorderRadius.circular(18),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(color: AppColors.borderSecondary),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.03),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.mail_outline_rounded, size: 20, color: Color(0xFFF43F5E)),
+                          SizedBox(width: 10),
+                          Text(
+                            'Continue with Gmail',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ).animate().fadeIn(delay: 550.ms).slideY(begin: 0.1, end: 0),
+                ],
+              ),
+
+              // Bottom Policy Disclaimer
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Wrap(
+                  alignment: WrapAlignment.center,
+                  children: [
+                    const Text(
+                      'By continuing, you agree to our ',
+                      style: TextStyle(fontSize: 11, color: AppColors.textTertiary),
+                    ),
+                    InkWell(
+                      onTap: () => _showInfoDialog(
+                        context,
+                        'Terms of Service',
+                        'Welcome to ShareLoop! By accessing our circular economy sharing platform, you agree to treat community items responsibly and contribute positively to reducing local landfill waste.',
+                      ),
+                      child: const Text(
+                        'Terms of Service',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.brandPrimary,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
+                    const Text(
+                      ' and ',
+                      style: TextStyle(fontSize: 11, color: AppColors.textTertiary),
+                    ),
+                    InkWell(
+                      onTap: () => _showInfoDialog(
+                        context,
+                        'Privacy Policy',
+                        'ShareLoop values your privacy. We only use your location and contact information to arrange safe, localized item handovers between community members.',
+                      ),
+                      child: const Text(
+                        'Privacy Policy',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.brandPrimary,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
+                    const Text(
+                      '.',
+                      style: TextStyle(fontSize: 11, color: AppColors.textTertiary),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }

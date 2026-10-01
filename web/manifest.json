@@ -1,11 +1,11 @@
 {
-    "name": "ecolanka",
-    "short_name": "ecolanka",
+    "name": "ShareLoop",
+    "short_name": "ShareLoop",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#F7FAF5",
+    "theme_color": "#69B329",
+    "description": "ShareLoop - Eco-Circular Community Platform",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

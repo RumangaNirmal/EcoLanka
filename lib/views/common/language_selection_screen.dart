@@ -1,486 +1,246 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../config/constants.dart';
-import '../../l10n/app_localizations.dart';
 import '../../providers/language_provider.dart';
 
 class LanguageSelectionScreen extends StatefulWidget {
   const LanguageSelectionScreen({super.key});
 
   @override
-  State<LanguageSelectionScreen> createState() =>
-      _LanguageSelectionScreenState();
+  State<LanguageSelectionScreen> createState() => _LanguageSelectionScreenState();
 }
 
-class _LanguageSelectionScreenState
-    extends State<LanguageSelectionScreen> {
-  String selectedLanguage = 'en';
+class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
+  late String _selectedCode;
+
+  final List<Map<String, String>> _languages = [
+    {
+      'code': 'en',
+      'title': 'English',
+      'sub': 'International',
+    },
+    {
+      'code': 'si',
+      'title': 'Sinhala (සිංහල)',
+      'sub': 'දේශීය භාෂාව',
+    },
+    {
+      'code': 'ta',
+      'title': 'Tamil (தமிழ்)',
+      'sub': 'பிராந்திய மொழி',
+    },
+  ];
 
   @override
   void initState() {
     super.initState();
-
-    final languageProvider = context.read<LanguageProvider>();
-
-    selectedLanguage =
-        languageProvider.appLocale.languageCode;
+    final langProv = context.read<LanguageProvider>();
+    _selectedCode = langProv.appLocale.languageCode;
   }
 
-  Future<void> _selectLanguage(String code) async {
+  void _onSelect(String code) {
     setState(() {
-      selectedLanguage = code;
+      _selectedCode = code;
     });
-
-    await context.read<LanguageProvider>().changeLanguage(
-          Locale(code),
-        );
-  }
-
-  void _continue() {
-    context.go('/onboarding');
+    context.read<LanguageProvider>().changeLanguage(Locale(code));
   }
 
   @override
   Widget build(BuildContext context) {
-    final mediaQuery = MediaQuery.of(context);
-
-    final screenHeight = mediaQuery.size.height;
-    final screenWidth = mediaQuery.size.width;
-
-    final t = AppLocalizations.of(context)!;
-
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(
-            horizontal: screenWidth * 0.06,
-            vertical: screenHeight * 0.03,
-          ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // --------------------------------------------------
-              // TOP SPACING
-              // --------------------------------------------------
+              // Top Section: Logo & Header
+              Column(
+                children: [
+                  const SizedBox(height: 12),
+                  Container(
+                    width: 72,
+                    height: 72,
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: AppColors.brand100, width: 1.5),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.brandPrimary.withValues(alpha: 0.1),
+                          blurRadius: 16,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(14),
+                      child: Image.asset(
+                        AppImages.logo,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(Icons.all_inclusive, color: AppColors.brandPrimary, size: 36),
+                      ),
+                    ),
+                  ).animate().fadeIn(duration: 500.ms).scale(),
 
-              SizedBox(
-                height: screenHeight * 0.02,
-              ),
+                  const SizedBox(height: 18),
 
-              // --------------------------------------------------
-              // LOGO
-              // --------------------------------------------------
-
-              Container(
-                width: (screenWidth * 0.18).clamp(
-                  56.0,
-                  72.0,
-                ),
-                height: (screenWidth * 0.18).clamp(
-                  56.0,
-                  72.0,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.brandPrimary.withValues(
-                    alpha: 0.1,
-                  ),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                padding: const EdgeInsets.all(16),
-                child: Image.asset(
-                  AppImages.logo,
-                  fit: BoxFit.contain,
-                  errorBuilder: (
-                    context,
-                    error,
-                    stackTrace,
-                  ) {
-                    return const Icon(
-                      Icons.eco,
-                      color: AppColors.brandPrimary,
-                      size: 36,
-                    );
-                  },
-                ),
-              )
-                  .animate()
-                  .fadeIn(
-                    duration: 800.ms,
-                  )
-                  .scale(
-                    duration: 800.ms,
-                  ),
-
-              // --------------------------------------------------
-              // LOGO SPACING
-              // --------------------------------------------------
-
-              SizedBox(
-                height: screenHeight * 0.02,
-              ),
-
-              // --------------------------------------------------
-              // APP NAME
-              // --------------------------------------------------
-
-              FittedBox(
-                fit: BoxFit.scaleDown,
-                child: RichText(
-                  text: const TextSpan(
+                  const Text(
+                    'Select Language',
                     style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.textPrimary,
                       letterSpacing: -0.5,
                     ),
-                    children: [
-                      TextSpan(
-                        text: 'Eco',
-                        style: TextStyle(
-                          color: Color(0xFF2E7D32),
-                        ),
-                      ),
-                      TextSpan(
-                        text: 'Lanka',
-                        style: TextStyle(
-                          color: Color(0xFF1F2937),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                  ).animate().fadeIn(delay: 150.ms),
+
+                  const SizedBox(height: 6),
+
+                  const Text(
+                    'Choose your preferred language',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ).animate().fadeIn(delay: 250.ms),
+                ],
               ),
 
-              const SizedBox(height: 6),
-
-              // --------------------------------------------------
-              // TAGLINE
-              // --------------------------------------------------
-
-              Text(
-                'Sri Lanka\'s Green Sharing Community',
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: (screenWidth * 0.035).clamp(
-                    12.0,
-                    16.0,
-                  ),
-                  color: Colors.grey.shade600,
-                ),
-              ),
-
-              // --------------------------------------------------
-              // SPACING
-              // --------------------------------------------------
-
-              SizedBox(
-                height: screenHeight * 0.04,
-              ),
-
-              // --------------------------------------------------
-              // LANGUAGE CARD
-              // --------------------------------------------------
-
-              Container(
-                width: double.infinity,
-                padding: EdgeInsets.all(
-                  screenWidth * 0.06,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(
-                    color: Colors.grey.shade200,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(
-                        alpha: 0.03,
-                      ),
-                      blurRadius: 15,
-                      offset: const Offset(0, 5),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
-                  children: [
-                    // --------------------------------------------------
-                    // TITLE
-                    // --------------------------------------------------
-
-                    Text(
-                      t.languageSelectionTitle,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: (screenWidth * 0.05).clamp(
-                          18.0,
-                          24.0,
-                        ),
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                    ),
-
-                    const SizedBox(height: 4),
-
-                    // --------------------------------------------------
-                    // SUBTITLE
-                    // --------------------------------------------------
-
-                    Text(
-                      t.languageSelectionSubtitle,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: (screenWidth * 0.032).clamp(
-                          12.0,
-                          15.0,
-                        ),
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-
-                    // --------------------------------------------------
-                    // SPACING
-                    // --------------------------------------------------
-
-                    SizedBox(
-                      height: screenHeight * 0.03,
-                    ),
-
-                    // --------------------------------------------------
-                    // ENGLISH
-                    // --------------------------------------------------
-
-                    _buildLanguageTile(
-                      label: 'English',
-                      code: 'en',
-                      screenWidth: screenWidth,
-                    ),
-
-                    SizedBox(
-                      height: screenHeight * 0.015,
-                    ),
-
-                    // --------------------------------------------------
-                    // SINHALA
-                    // --------------------------------------------------
-
-                    _buildLanguageTile(
-                      label: 'සිංහල',
-                      code: 'si',
-                      screenWidth: screenWidth,
-                    ),
-
-                    SizedBox(
-                      height: screenHeight * 0.015,
-                    ),
-
-                    // --------------------------------------------------
-                    // TAMIL
-                    // --------------------------------------------------
-
-                    _buildLanguageTile(
-                      label: 'தமிழ்',
-                      code: 'ta',
-                      screenWidth: screenWidth,
-                    ),
-
-                    // --------------------------------------------------
-                    // BUTTON SPACING
-                    // --------------------------------------------------
-
-                    SizedBox(
-                      height: screenHeight * 0.035,
-                    ),
-
-                    // --------------------------------------------------
-                    // CONTINUE BUTTON
-                    // --------------------------------------------------
-
-                    SizedBox(
-                      width: double.infinity,
-                      height: 52,
-                      child: ElevatedButton(
-                        onPressed: _continue,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              AppColors.brandPrimary,
-                          elevation: 0,
-                          padding:
-                              const EdgeInsets.symmetric(
-                            horizontal: 16,
+              // Language Cards Options
+              Column(
+                children: _languages.map((lang) {
+                  final isSelected = _selectedCode == lang['code'];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12.0),
+                    child: InkWell(
+                      onTap: () => _onSelect(lang['code']!),
+                      borderRadius: BorderRadius.circular(20),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 250),
+                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: isSelected ? AppColors.brandPrimary : AppColors.borderPrimary,
+                            width: isSelected ? 2.0 : 1.2,
                           ),
-                          shape:
-                              RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(26),
-                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: isSelected
+                                  ? AppColors.brandPrimary.withValues(alpha: 0.12)
+                                  : Colors.black.withValues(alpha: 0.03),
+                              blurRadius: isSelected ? 12 : 6,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
                         ),
                         child: Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            Flexible(
-                              child: Text(
-                                t.continueButton,
-                                maxLines: 1,
-                                overflow:
-                                    TextOverflow.ellipsis,
-                                textAlign:
-                                    TextAlign.center,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight:
-                                      FontWeight.w600,
-                                ),
+                            Container(
+                              width: 42,
+                              height: 42,
+                              decoration: BoxDecoration(
+                                color: isSelected ? AppColors.brand50 : const Color(0xFFF8FAFC),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Icon(
+                                Icons.language_rounded,
+                                color: isSelected ? AppColors.brandPrimary : AppColors.textSecondary,
+                                size: 22,
                               ),
                             ),
-                            const SizedBox(width: 8),
-                            const Icon(
-                              Icons.arrow_forward,
-                              size: 18,
-                              color: Colors.white,
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    lang['title']!,
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                                      color: isSelected ? AppColors.textPrimary : AppColors.textSecondary,
+                                    ),
+                                  ),
+                                  Text(
+                                    lang['sub']!,
+                                    style: const TextStyle(
+                                      fontSize: 11,
+                                      color: AppColors.textTertiary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              width: 22,
+                              height: 22,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: isSelected ? AppColors.brandPrimary : AppColors.borderSecondary,
+                                  width: 2,
+                                ),
+                              ),
+                              child: isSelected
+                                  ? Center(
+                                      child: Container(
+                                        width: 11,
+                                        height: 11,
+                                        decoration: const BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: AppColors.brandPrimary,
+                                        ),
+                                      ),
+                                    )
+                                  : null,
                             ),
                           ],
                         ),
                       ),
                     ),
+                  );
+                }).toList(),
+              ),
 
-                    // --------------------------------------------------
-                    // FOOTER SPACING
-                    // --------------------------------------------------
-
-                    SizedBox(
-                      height: screenHeight * 0.02,
+              // Bottom Continue Button
+              ElevatedButton(
+                onPressed: () {
+                  context.go('/onboarding');
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.brandPrimary,
+                  foregroundColor: Colors.white,
+                  elevation: 3,
+                  shadowColor: AppColors.brandPrimary.withValues(alpha: 0.3),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Continue',
+                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
                     ),
-
-                    // --------------------------------------------------
-                    // FOOTER
-                    // --------------------------------------------------
-
-                    Center(
-                      child: Text(
-                        t.languageSelectionFooter,
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: (screenWidth * 0.03).clamp(
-                            11.0,
-                            14.0,
-                          ),
-                          color: Colors.grey.shade500,
-                        ),
-                      ),
-                    ),
+                    SizedBox(width: 8),
+                    Icon(Icons.arrow_forward_rounded, size: 18),
                   ],
                 ),
               ),
-
-              // --------------------------------------------------
-              // BOTTOM SPACING
-              // --------------------------------------------------
-
-              SizedBox(
-                height: screenHeight * 0.02,
-              ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  // ================================================================
-  // LANGUAGE TILE
-  // ================================================================
-
-  Widget _buildLanguageTile({
-    required String label,
-    required String code,
-    required double screenWidth,
-  }) {
-    final bool isSelected = selectedLanguage == code;
-
-    return GestureDetector(
-      onTap: () => _selectLanguage(code),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        width: double.infinity,
-        padding: EdgeInsets.symmetric(
-          horizontal: (screenWidth * 0.04).clamp(
-            12.0,
-            20.0,
-          ),
-          vertical: 14,
-        ),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? AppColors.brandPrimary.withValues(
-                  alpha: 0.05,
-                )
-              : Colors.white,
-          border: Border.all(
-            color: isSelected
-                ? AppColors.brandPrimary
-                : Colors.grey.shade300,
-            width: isSelected ? 2.0 : 1.0,
-          ),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          children: [
-            // LANGUAGE NAME
-
-            Expanded(
-              child: Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: (screenWidth * 0.038).clamp(
-                    14.0,
-                    18.0,
-                  ),
-                  fontWeight: isSelected
-                      ? FontWeight.w600
-                      : FontWeight.w500,
-                  color: isSelected
-                      ? AppColors.brandPrimary
-                      : Colors.black87,
-                ),
-              ),
-            ),
-
-            const SizedBox(width: 12),
-
-            // SELECTED INDICATOR
-
-            Container(
-              width: 22,
-              height: 22,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: isSelected
-                      ? AppColors.brandPrimary
-                      : Colors.grey.shade400,
-                  width: isSelected ? 7 : 1.5,
-                ),
-              ),
-            ),
-          ],
         ),
       ),
     );

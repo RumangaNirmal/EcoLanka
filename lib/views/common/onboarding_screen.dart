@@ -1,11 +1,8 @@
-
-// lib/views/common/onboarding_screen.dart
-
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../config/constants.dart';
-import '../../l10n/app_localizations.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -16,529 +13,330 @@ class OnboardingScreen extends StatefulWidget {
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
+  int _currentPage = 0;
 
-  int _currentIndex = 0;
-
-  // ============================================================
-  // ONBOARDING DATA
-  // ============================================================
-
-  final List<Map<String, dynamic>> _onboardingData = [
+  final List<Map<String, dynamic>> _pages = [
     {
-      'badgeKey': 'badge1',
-      'titleKey': 'title1',
-      'descriptionKey': 'description1',
-      'image': AppImages.onboarding1,
-      'icon': Icons.eco_rounded,
+      'title': 'Reduce Waste',
+      'body':
+          'Help reduce unnecessary waste by sharing unused household items, tools, and books directly with your neighborhood.',
+      'icon': Icons.recycling_rounded,
+      'badge': 'Eco-Friendly',
     },
     {
-      'badgeKey': 'badge2',
-      'titleKey': 'title2',
-      'descriptionKey': 'description2',
-      'image': AppImages.onboarding2,
-      'icon': Icons.handshake_rounded,
+      'title': 'Share Useful Items',
+      'body':
+          'Donate or share furniture, books, electronics, and baby gear with genuine people who will cherish and use them.',
+      'icon': Icons.inventory_2_rounded,
+      'badge': 'Direct Sharing',
     },
     {
-      'badgeKey': 'badge3',
-      'titleKey': 'title3',
-      'descriptionKey': 'description3',
-      'image': AppImages.onboarding3,
-      'icon': Icons.forest_rounded,
+      'title': 'Build Sustainable Community',
+      'body':
+          'Connect with local members, earn trust badges, and track your diverted CO₂ and landfill waste in real-time.',
+      'icon': Icons.diversity_1_rounded,
+      'badge': 'Zero Waste Lanka',
     },
   ];
 
-  // ============================================================
-  // GET LOCALIZED TEXT
-  // ============================================================
-
-  String _getText(
-    AppLocalizations t,
-    String key,
-  ) {
-    switch (key) {
-      case 'badge1':
-        return t.badge1;
-      case 'title1':
-        return t.title1;
-      case 'description1':
-        return t.description1;
-
-      case 'badge2':
-        return t.badge2;
-      case 'title2':
-        return t.title2;
-      case 'description2':
-        return t.description2;
-
-      case 'badge3':
-        return t.badge3;
-      case 'title3':
-        return t.title3;
-      case 'description3':
-        return t.description3;
-
-      default:
-        return '';
-    }
-  }
-
-  // ============================================================
-  // NEXT BUTTON
-  // ============================================================
-
-  void _onNext() {
-    if (_currentIndex < _onboardingData.length - 1) {
+  void _nextPage() {
+    if (_currentPage < _pages.length - 1) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 350),
         curve: Curves.easeInOut,
       );
     } else {
-      _navigateToWelcome();
+      context.go('/welcome');
     }
   }
 
-  // ============================================================
-  // NAVIGATE TO WELCOME
-  // ============================================================
+  void _prevPage() {
+    if (_currentPage > 0) {
+      _pageController.previousPage(
+        duration: const Duration(milliseconds: 350),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
 
-  void _navigateToWelcome() {
-    if (!mounted) return;
-
+  void _skip() {
     context.go('/welcome');
   }
 
-  // ============================================================
-  // DISPOSE
-  // ============================================================
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
-
-  // ============================================================
-  // BUILD
-  // ============================================================
-
   @override
   Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context)!;
-    final mediaQuery = MediaQuery.of(context);
-
-    final screenWidth = mediaQuery.size.width;
-    final screenHeight = mediaQuery.size.height;
-
-    // ==========================================================
-    // RESPONSIVE VALUES
-    // ==========================================================
-
-    final horizontalPadding =
-        (screenWidth * 0.07).clamp(16.0, 40.0);
-
-    final topPadding =
-        (screenHeight * 0.025).clamp(12.0, 28.0);
-
-    final bottomPadding =
-        (screenHeight * 0.025).clamp(12.0, 28.0);
-
-    final heroImageHeight =
-        (screenHeight * 0.28).clamp(140.0, 300.0);
-
-    final titleFontSize =
-        (screenWidth * 0.055).clamp(19.0, 28.0);
-
-    final descriptionFontSize =
-        (screenWidth * 0.035).clamp(13.0, 17.0);
-
-    final badgeFontSize =
-        (screenWidth * 0.030).clamp(10.0, 13.0);
-
-    final buttonFontSize =
-        (screenWidth * 0.04).clamp(14.0, 18.0);
-
-    final skipFontSize =
-        (screenWidth * 0.037).clamp(12.0, 16.0);
-
-    final buttonHeight =
-        (screenHeight * 0.065).clamp(48.0, 60.0);
-
-    // ==========================================================
-    // SCREEN
-    // ==========================================================
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return Stack(
-              children: [
-                // =================================================
-                // PAGE VIEW
-                // =================================================
-
-                Positioned.fill(
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      left: horizontalPadding,
-                      right: horizontalPadding,
-                      top: topPadding + 35,
-                      bottom: bottomPadding + 85,
-                    ),
-                    child: PageView.builder(
-                      controller: _pageController,
-                      itemCount: _onboardingData.length,
-                      onPageChanged: (index) {
-                        if (!mounted) return;
-
-                        setState(() {
-                          _currentIndex = index;
-                        });
-                      },
-                      itemBuilder: (context, index) {
-                        final item = _onboardingData[index];
-
-                        final badge = _getText(
-                          t,
-                          item['badgeKey'] as String,
-                        );
-
-                        final title = _getText(
-                          t,
-                          item['titleKey'] as String,
-                        );
-
-                        final description = _getText(
-                          t,
-                          item['descriptionKey'] as String,
-                        );
-
-                        return Column(
-                          mainAxisAlignment:
-                              MainAxisAlignment.center,
-                          children: [
-                            // =====================================
-                            // IMAGE
-                            // =====================================
-
-                            SizedBox(
-                              height: heroImageHeight,
-                              child: Image.asset(
-                                item['image'] as String,
-                                fit: BoxFit.contain,
-                                errorBuilder:
-                                    (context, error, stackTrace) {
-                                  return Container(
-                                    width:
-                                        heroImageHeight * 0.65,
-                                    height:
-                                        heroImageHeight * 0.65,
-                                    decoration: BoxDecoration(
-                                      color: AppColors.brandPrimary
-                                          .withValues(alpha: 0.08),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Icon(
-                                      item['icon'] as IconData,
-                                      size:
-                                          heroImageHeight * 0.45,
-                                      color:
-                                          AppColors.brandPrimary,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-
-                            // =====================================
-                            // IMAGE → BADGE
-                            // =====================================
-
-                            SizedBox(
-                              height:
-                                  (constraints.maxHeight * 0.035)
-                                      .clamp(12.0, 28.0),
-                            ),
-
-                            // =====================================
-                            // BADGE
-                            // =====================================
-
-                            Container(
-                              constraints: BoxConstraints(
-                                maxWidth:
-                                    constraints.maxWidth * 0.85,
-                              ),
-                              padding:
-                                  const EdgeInsets.symmetric(
-                                horizontal: 14,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppColors.brandPrimary
-                                    .withValues(alpha: 0.10),
-                                borderRadius:
-                                    BorderRadius.circular(20),
-                              ),
-                              child: Text(
-                                badge,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color:
-                                      AppColors.brandPrimary,
-                                  fontSize: badgeFontSize,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 0.8,
-                                ),
-                              ),
-                            ),
-
-                            // =====================================
-                            // BADGE → TITLE
-                            // =====================================
-
-                            SizedBox(
-                              height:
-                                  (constraints.maxHeight * 0.018)
-                                      .clamp(8.0, 18.0),
-                            ),
-
-                            // =====================================
-                            // TITLE
-                            // =====================================
-
-                            ConstrainedBox(
-                              constraints: BoxConstraints(
-                                maxWidth:
-                                    constraints.maxWidth * 0.92,
-                              ),
-                              child: Text(
-                                title,
-                                textAlign: TextAlign.center,
-                                maxLines: 3,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: titleFontSize,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
-                                  height: 1.2,
-                                ),
-                              ),
-                            ),
-
-                            // =====================================
-                            // TITLE → DESCRIPTION
-                            // =====================================
-
-                            SizedBox(
-                              height:
-                                  (constraints.maxHeight * 0.015)
-                                      .clamp(8.0, 16.0),
-                            ),
-
-                            // =====================================
-                            // DESCRIPTION
-                            // =====================================
-
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal:
-                                    constraints.maxWidth * 0.02,
-                              ),
-                              child: ConstrainedBox(
-                                constraints: BoxConstraints(
-                                  maxWidth:
-                                      constraints.maxWidth * 0.90,
-                                ),
-                                child: Text(
-                                  description,
-                                  textAlign: TextAlign.center,
-                                  maxLines: 5,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontSize:
-                                        descriptionFontSize,
-                                    height: 1.5,
-                                    color: Colors.grey.shade600,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                  ),
-                ),
-
-                // =================================================
-                // TOP SKIP BUTTON
-                // =================================================
-
-                Align(
-                  alignment: Alignment.topRight,
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      top:
-                          (constraints.maxHeight * 0.018)
-                              .clamp(8.0, 20.0),
-                      right: horizontalPadding,
-                    ),
-                    child: _currentIndex <
-                            _onboardingData.length - 1
-                        ? TextButton(
-                            onPressed: _navigateToWelcome,
-                            style: TextButton.styleFrom(
-                              padding:
-                                  const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 6,
-                              ),
-                            ),
-                            child: Text(
-                              t.skip,
-                              maxLines: 1,
-                              overflow:
-                                  TextOverflow.ellipsis,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
+          child: Column(
+            children: [
+              // Top Navigation Bar (Back & Skip)
+              SizedBox(
+                height: 44,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _currentPage > 0
+                        ? TextButton.icon(
+                            onPressed: _prevPage,
+                            icon: const Icon(Icons.arrow_back_rounded, size: 18, color: AppColors.textSecondary),
+                            label: const Text(
+                              'Back',
                               style: TextStyle(
-                                color: Colors.grey,
-                                fontSize: skipFontSize,
-                                fontWeight: FontWeight.w500,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.textSecondary,
                               ),
                             ),
                           )
                         : const SizedBox.shrink(),
-                  ),
-                ),
-
-                // =================================================
-                // BOTTOM CTA + SINGLE PAGE INDICATOR
-                // =================================================
-
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      left: horizontalPadding,
-                      right: horizontalPadding,
-                      bottom:
-                          (constraints.maxHeight * 0.018)
-                              .clamp(8.0, 18.0),
+                    TextButton(
+                      onPressed: _skip,
+                      child: const Text(
+                        'Skip',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
                     ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // =========================================
-                        // BUTTON
-                        // =========================================
+                  ],
+                ),
+              ),
 
-                        SizedBox(
-                          width: double.infinity,
-                          height: buttonHeight,
-                          child: ElevatedButton(
-                            onPressed: _onNext,
-                            style:
-                                ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  AppColors.brandPrimary,
-                              foregroundColor: Colors.white,
-                              elevation: 0,
-                              shape:
-                                  RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.circular(30),
+              // PageView Content
+              Expanded(
+                child: PageView.builder(
+                  controller: _pageController,
+                  onPageChanged: (index) {
+                    setState(() {
+                      _currentPage = index;
+                    });
+                  },
+                  itemCount: _pages.length,
+                  itemBuilder: (context, index) {
+                    final item = _pages[index];
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Large Illustration Box
+                          Container(
+                            width: 250,
+                            height: 250,
+                            decoration: BoxDecoration(
+                              color: AppColors.brand50,
+                              borderRadius: BorderRadius.circular(36),
+                              border: Border.all(color: AppColors.brand100, width: 1.5),
+                              gradient: const RadialGradient(
+                                colors: [
+                                  Color(0xFFE8F5D8),
+                                  Color(0xFFF2F8EB),
+                                ],
+                                radius: 0.85,
                               ),
                             ),
-                            child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Flexible(
-                                  child: Text(
-                                    _currentIndex ==
-                                            _onboardingData
-                                                    .length -
-                                                1
-                                        ? t.getStarted
-                                        : t.next,
-                                    maxLines: 1,
-                                    overflow:
-                                        TextOverflow.ellipsis,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: buttonFontSize,
-                                      fontWeight:
-                                          FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                const Icon(
-                                  Icons.arrow_forward,
-                                  size: 18,
+                            child: Center(
+                              child: Container(
+                                width: 170,
+                                height: 170,
+                                decoration: BoxDecoration(
                                   color: Colors.white,
+                                  borderRadius: BorderRadius.circular(28),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: AppColors.brandPrimary.withValues(alpha: 0.12),
+                                      blurRadius: 20,
+                                      offset: const Offset(0, 8),
+                                    ),
+                                  ],
                                 ),
-                              ],
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      width: 72,
+                                      height: 72,
+                                      decoration: BoxDecoration(
+                                        color: AppColors.brand50,
+                                        shape: BoxShape.circle,
+                                        border: Border.all(color: AppColors.brand100),
+                                      ),
+                                      child: Icon(
+                                        item['icon'] as IconData,
+                                        size: 40,
+                                        color: AppColors.brandPrimaryDark,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 12),
+                                    Container(
+                                      height: 7,
+                                      width: 60,
+                                      decoration: BoxDecoration(
+                                        color: AppColors.brand100,
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Container(
+                                      height: 6,
+                                      width: 36,
+                                      decoration: BoxDecoration(
+                                        color: AppColors.borderPrimary,
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          )
+                              .animate(key: ValueKey(index))
+                              .scale(begin: const Offset(0.9, 0.9), end: const Offset(1, 1), duration: 400.ms),
+
+                          const SizedBox(height: 36),
+
+                          // Title
+                          Text(
+                            item['title'] as String,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.textPrimary,
+                              letterSpacing: -0.5,
                             ),
                           ),
-                        ),
 
-                        // =========================================
-                        // SINGLE PAGE INDICATOR
-                        // =========================================
+                          const SizedBox(height: 12),
 
-                        SizedBox(
-                          height:
-                              (constraints.maxHeight * 0.015)
-                                  .clamp(6.0, 14.0),
-                        ),
+                          // Description
+                          ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 300),
+                            child: Text(
+                              item['body'] as String,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                height: 1.5,
+                                color: AppColors.textSecondary,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
 
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: List.generate(
-                            _onboardingData.length,
-                            (index) {
-                              return AnimatedContainer(
-                                duration:
-                                    const Duration(
-                                  milliseconds: 200,
-                                ),
-                                margin:
-                                    const EdgeInsets.symmetric(
-                                  horizontal: 4,
-                                ),
-                                width:
-                                    _currentIndex == index
-                                        ? 12
-                                        : 8,
+                          const SizedBox(height: 28),
+
+                          // 3-Dot Page Indicator
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: List.generate(
+                              _pages.length,
+                              (dotIndex) => AnimatedContainer(
+                                duration: const Duration(milliseconds: 250),
+                                margin: const EdgeInsets.symmetric(horizontal: 4),
+                                width: dotIndex == _currentPage ? 24 : 8,
                                 height: 8,
                                 decoration: BoxDecoration(
-                                  color:
-                                      _currentIndex == index
-                                          ? AppColors
-                                              .brandPrimary
-                                          : Colors
-                                              .grey
-                                              .shade300,
-                                  borderRadius:
-                                      BorderRadius.circular(4),
+                                  color: dotIndex == _currentPage ? AppColors.brandPrimary : AppColors.borderPrimary,
+                                  borderRadius: BorderRadius.circular(4),
                                 ),
-                              );
-                            },
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+              // Bottom Actions
+              _currentPage == 0
+                  ? ElevatedButton(
+                      onPressed: _nextPage,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.brandPrimary,
+                        foregroundColor: Colors.white,
+                        elevation: 3,
+                        shadowColor: AppColors.brandPrimary.withValues(alpha: 0.3),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      child: const Text(
+                        'Next',
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                      ),
+                    )
+                  : _currentPage == 1
+                      ? Row(
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: OutlinedButton(
+                                onPressed: _prevPage,
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: AppColors.textSecondary,
+                                  side: const BorderSide(color: AppColors.borderPrimary),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(18),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                ),
+                                child: const Text(
+                                  'Prev',
+                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              flex: 2,
+                              child: ElevatedButton(
+                                onPressed: _nextPage,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.brandPrimary,
+                                  foregroundColor: Colors.white,
+                                  elevation: 3,
+                                  shadowColor: AppColors.brandPrimary.withValues(alpha: 0.3),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(18),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                ),
+                                child: const Text(
+                                  'Next',
+                                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                      : ElevatedButton(
+                          onPressed: _nextPage,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.brandPrimary,
+                            foregroundColor: Colors.white,
+                            elevation: 3,
+                            shadowColor: AppColors.brandPrimary.withValues(alpha: 0.3),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                          ),
+                          child: const Text(
+                            'Get Started',
+                            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
+            ],
+          ),
         ),
       ),
     );
